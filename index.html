@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To My Missou</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffe6e6;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        h1 { color: #d63384; text-align: center; padding: 0 10px; }
+
+        .container { text-align: center; position: relative; width: 100%; max-width: 500px; }
+
+        .buttons { margin-top: 20px; display: flex; justify-content: center; gap: 20px; }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 10;
+        }
+
+        #yesBtn { background-color: #28a745; color: white; }
+        #noBtn { background-color: #dc3545; color: white; position: absolute; }
+
+        .result-img {
+            display: none;
+            width: 300px;
+            max-width: 80%;
+            margin: 20px auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div id="mainContent" class="container">
+        <h1 id="question">To my Missou: Will you be my Valentine?</h1>
+        <div class="buttons">
+            <button id="yesBtn">Yes</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <div id="result" class="container" style="display: none;">
+        <img id="stitchImg" class="result-img" src="" alt="Stitch">
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const mainContent = document.getElementById('mainContent');
+        const resultDiv = document.getElementById('result');
+        const stitchImg = document.getElementById('stitchImg');
+
+        let noCount = 0;
+
+        // تحريك زر No
+        function moveButton() {
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+        }
+
+        noBtn.addEventListener('mouseover', moveButton);
+        
+        noBtn.addEventListener('click', () => {
+            noCount++;
+            if (noCount >= 3) {
+                showResult('angry.png'); // تأكد أن هذا اسم الصورة التي رفعتها
+            } else {
+                moveButton();
+            }
+        });
+
+        yesBtn.addEventListener('click', () => {
+            showResult('happy.png'); // تأكد أن هذا اسم الصورة التي رفعتها
+        });
+
+        function showResult(imageSrc) {
+            mainContent.style.display = 'none';
+            resultDiv.style.display = 'block';
+            stitchImg.src = imageSrc;
+            stitchImg.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
