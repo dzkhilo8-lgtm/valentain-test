@@ -1,121 +1,107 @@
-> elkhalil:
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To My Missou</title>
     <style>
         body {
+            margin: 0;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
             background-color: #ffe6e6;
-            font-family: 'Arial', sans-serif;
+            font-family: sans-serif;
             overflow: hidden;
         }
-
-        h1 { color: #d63384; text-align: center; padding: 0 20px; z-index: 1; }
-
-        .container { text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-
-        /* تعديل لجعل الأزرار بجانب بعضها في البداية */
-        .buttons { 
-            margin-top: 20px; 
-            display: flex; 
-            justify-content: center; 
-            gap: 30px; 
-            width: 100%;
-            height: 60px;
+        h1 { color: #d63384; text-align: center; margin-bottom: 30px; }
+        
+        .btn-container {
+            display: flex;
+            gap: 50px; /* مسافة واضحة بين الأزرار */
+            justify-content: center;
             align-items: center;
+            width: 100%;
+            height: 100px;
         }
 
         button {
             padding: 15px 35px;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            z-index: 100;
+            z-index: 1000;
         }
 
-        #yesBtn { background-color: #28a745; color: white; transition: 0.3s; }
+        #yesBtn { background-color: #28a745; color: white; position: relative; }
         
         #noBtn { 
             background-color: #dc3545; 
             color: white; 
-            transition: all 0.3s ease; /* سرعة متوسطة ومنتظمة */
+            position: relative; 
+            transition: all 0.3s ease;
         }
 
         .result-img {
             display: none;
-            width: 400px;
+            width: 350px;
             max-width: 90%;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: fadeIn 0.8s ease-in-out;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <div id="mainContent" class="container">
-        <h1 id="question">To my Missou: Will you be my Valentine?</h1>
-        <div class="buttons">
+    <div id="mainUI">
+        <h1>To my Missou: Will you be my Valentine?</h1>
+        <div class="btn-container">
             <button id="yesBtn">Yes</button>
             <button id="noBtn">No</button>
         </div>
     </div>
 
-    <div id="result" class="container" style="display: none;">
-        <img id="stitchImg" class="result-img" src="" alt="Stitch Result">
-    </div>
+    <img id="stitchImg" class="result-img" src="" alt="Stitch">
 
     <script>
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
-        const mainContent = document.getElementById('mainContent');
-        const resultDiv = document.getElementById('result');
+        const mainUI = document.getElementById('mainUI');
         const stitchImg = document.getElementById('stitchImg');
-
+        
         let noCount = 0;
-        let isMoving = false;
 
-        function moveButton() {
-            // تحويل الزر إلى وضعية absolute فقط عند أول حركة ليبدأ بالهروب
-            if (!isMoving) {
+        function move() {
+            // تحويل الزر إلى absolute عند أول محاولة حركة فقط
+            if (noBtn.style.position !== 'absolute') {
                 noBtn.style.position = 'absolute';
-                isMoving = true;
             }
+            
+            // تحديد مساحة الحركة (مع ترك هامش 100 بكسل من كل جهة)
+            const padding = 100;
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
 
-            // تحديد حدود الشاشة بدقة مع ترك هامش أمان كبير (150 بكسل)
-            const margin = 150;
-            const maxX = window.innerWidth - noBtn.offsetWidth - margin;
-            const maxY = window.innerHeight - noBtn.offsetHeight - margin;
+            const x = Math.random() * maxX + (padding/2);
+            const y = Math.random() * maxY + (padding/2);
 
-            // توليد إحداثيات لا تخرج عن الحواف أبداً
-            const randomX = Math.max(margin, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(margin, Math.floor(Math.random() * maxY));
-
-            noBtn.style.left = randomX + 'px';
-            noBtn.style.top = randomY + 'px';
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
         }
 
-        // الحركة عند الاقتراب
-        noBtn.addEventListener('mouseover', moveButton);
-
-        // الحركة عند الضغط
+        // الحركة للحاسوب (الماوس)
+        noBtn.addEventListener('mouseover', move);
+        
+        // الحركة أو إظهار الصورة عند الضغط (للجوال)
         noBtn.addEventListener('click', () => {
             noCount++;
             if (noCount >= 3) {
                 showResult('Angery.png'); 
             } else {
-                moveButton();
+                move();
             }
         });
 
@@ -123,13 +109,11 @@
             showResult('Happy.png');
         });
 
-> elkhalil:
-function showResult(imageSrc) {
-            mainContent.style.display = 'none';
-            resultDiv.style.display = 'block';
-            stitchImg.src = imageSrc;
+        function showResult(imgName) {
+            mainUI.style.display = 'none';
+            noBtn.style.display = 'none';
+            stitchImg.src = imgName;
             stitchImg.style.display = 'block';
-            noBtn.style.display = 'none'; 
         }
     </script>
 </body>
