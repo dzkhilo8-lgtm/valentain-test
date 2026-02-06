@@ -18,46 +18,48 @@
             overflow: hidden;
         }
 
-        h1 { color: #d63384; text-align: center; padding: 0 20px; transition: 0.5s; }
+        h1 { color: #d63384; text-align: center; padding: 0 20px; z-index: 1; }
 
-        .container { text-align: center; position: relative; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .container { text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        .buttons { margin-top: 20px; display: flex; justify-content: center; gap: 20px; }
+        /* تعديل لجعل الأزرار بجانب بعضها في البداية */
+        .buttons { 
+            margin-top: 20px; 
+            display: flex; 
+            justify-content: center; 
+            gap: 30px; 
+            width: 100%;
+            height: 60px;
+            align-items: center;
+        }
 
         button {
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            padding: 15px 35px;
+            font-size: 1.3rem;
             border: none;
-            border-radius: 15px;
+            border-radius: 12px;
             cursor: pointer;
             z-index: 100;
         }
 
         #yesBtn { background-color: #28a745; color: white; transition: 0.3s; }
-        #yesBtn:hover { transform: scale(1.1); }
-
+        
         #noBtn { 
             background-color: #dc3545; 
             color: white; 
-            position: absolute; 
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* حركة انسيابية ممتعة */
-        }
-
-        .result-container {
-            display: none;
-            text-align: center;
-            animation: fadeIn 0.8s ease-in-out;
+            transition: all 0.3s ease; /* سرعة متوسطة ومنتظمة */
         }
 
         .result-img {
-            width: 350px;
-            max-width: 85%;
-            border-radius: 25px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-            margin-top: 10px;
+            display: none;
+            width: 400px;
+            max-width: 90%;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: fadeIn 0.8s ease-in-out;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -71,9 +73,7 @@
     </div>
 
     <div id="result" class="container" style="display: none;">
-        <div class="result-container" id="resContainer">
-            <img id="stitchImg" class="result-img" src="" alt="Stitch Result">
-        </div>
+        <img id="stitchImg" class="result-img" src="" alt="Stitch Result">
     </div>
 
     <script>
@@ -81,48 +81,55 @@
         const yesBtn = document.getElementById('yesBtn');
         const mainContent = document.getElementById('mainContent');
         const resultDiv = document.getElementById('result');
-        const resContainer = document.getElementById('resContainer');
         const stitchImg = document.getElementById('stitchImg');
 
         let noCount = 0;
+        let isMoving = false;
 
         function moveButton() {
-            // حساب المساحة المتاحة مع ترك هامش أمان للحواف
-            const padding = 100;
-            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            // تحويل الزر إلى وضعية absolute فقط عند أول حركة ليبدأ بالهروب
+            if (!isMoving) {
+                noBtn.style.position = 'absolute';
+                isMoving = true;
+            }
 
-            const randomX = Math.max(padding/2, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(padding/2, Math.floor(Math.random() * maxY));
+            // تحديد حدود الشاشة بدقة مع ترك هامش أمان كبير (150 بكسل)
+            const margin = 150;
+            const maxX = window.innerWidth - noBtn.offsetWidth - margin;
+            const maxY = window.innerHeight - noBtn.offsetHeight - margin;
+
+            // توليد إحداثيات لا تخرج عن الحواف أبداً
+            const randomX = Math.max(margin, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(margin, Math.floor(Math.random() * maxY));
 
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
         }
 
-        // حركة عند الاقتراب بالماوس
+        // الحركة عند الاقتراب
         noBtn.addEventListener('mouseover', moveButton);
 
-        // حركة عند الضغط (للموبايل)
+        // الحركة عند الضغط
         noBtn.addEventListener('click', () => {
             noCount++;
             if (noCount >= 3) {
-                showFinalResult('Angery.png'); 
+                showResult('Angery.png'); 
             } else {
                 moveButton();
             }
         });
 
         yesBtn.addEventListener('click', () => {
-            showFinalResult('Happy.png');
+            showResult('Happy.png');
         });
 
 > elkhalil:
-function showFinalResult(imageSrc) {
+function showResult(imageSrc) {
             mainContent.style.display = 'none';
-            noBtn.style.display = 'none'; // التأكد من اختفاء زر No
-            resultDiv.style.display = 'flex';
-            resContainer.style.display = 'block';
+            resultDiv.style.display = 'block';
             stitchImg.src = imageSrc;
+            stitchImg.style.display = 'block';
+            noBtn.style.display = 'none'; 
         }
     </script>
 </body>
